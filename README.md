@@ -1,1 +1,1 @@
-# DeltaHacks
+# DeltaMind
