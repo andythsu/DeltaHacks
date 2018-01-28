@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.deltahacks4.deltamind.deltamind.DetailActivity">
+
+    <TextView
+        android:id="@+id/titleLabel"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="Title: "
+        android:textSize="25dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintLeft_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="parent" />
+
+    <!--<TextView-->
+        <!--android:id="@+id/descriptionLabel"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:text="Description: "-->
+        <!--android:textSize="25dp"-->
+        <!--android:layout_marginLeft="20dp"-->
+        <!--android:layout_marginTop="20dp"-->
+        <!--app:layout_constraintLeft_toRightOf="parent"-->
+        <!--app:layout_constraintTop_toBottomOf="@id/titleLabel" />-->
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/titleLabel" />
+
+</android.support.constraint.ConstraintLayout>
+
+</ScrollView>

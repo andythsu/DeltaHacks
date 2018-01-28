@@ -1,21 +1,23 @@
 package com.deltahacks4.deltamind.deltamind;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.SystemClock;
 import android.provider.MediaStore;
-import android.support.annotation.RequiresApi;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -35,6 +37,8 @@ public class CreateReminder extends AppCompatActivity {
     Button takePictureButton;
     private DBActivity db;
     private String fileName;
+    private String rmd_title;
+    private String pic_absolute_path;
 
     static final int REQUEST_IMAGE_CAPTURE = 100;
 
@@ -112,6 +116,8 @@ public class CreateReminder extends AppCompatActivity {
                     savedToPicDB = db.insertPicture(rmd_id, fileName);
                     if(savedToPicDB) System.out.println("error when saving to picture table");
                 }
+                rmd_title = rmd.getTitle();
+                scheduleNotification(sub_rmds.size());
 
                 Intent newIntent = new Intent(view.getContext(), HomeActivity.class);
                 startActivity(newIntent);
@@ -157,6 +163,42 @@ public class CreateReminder extends AppCompatActivity {
             }
         }
 
+
+    public void scheduleNotification(int times) {
+//        int multiplier = 60000;
+        int multiplier = 10000; // delay 10 seconds to debug
+        for (int i = 0; i < times; i++) {
+            Intent notificationIntent = new Intent(this, MyNotificationPublisher.class);
+            notificationIntent.putExtra(MyNotificationPublisher.NOTIFICATION_ID, i);
+            notificationIntent.putExtra(MyNotificationPublisher.NOTIFICATION, getNotification());
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, i, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            //Debug. Schedule at 5 seconds later.
+            alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + multiplier, pendingIntent);
+            multiplier += 60000;
+        }
+    }
+
+    private Notification getNotification() {
+        Notification.Builder builder = new Notification.Builder(this);
+        Intent detailActivity = new Intent(this, DetailActivity.class);
+        System.out.println("filename: " + fileName);
+        detailActivity.putExtra("fileName", fileName);
+        detailActivity.putExtra("title", rmd_title);
+        detailActivity.putExtra("pic_absolute_path", pic_absolute_path);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, detailActivity, PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(pendingIntent);
+        builder.setContentTitle("Title");
+        builder.setContentText("Remember to take your medicine");
+        builder.setSmallIcon(R.drawable.ic_launcher_foreground);
+        builder.setPriority(Notification.PRIORITY_MAX);
+        builder.setDefaults(NotificationCompat.DEFAULT_VIBRATE);
+        builder.setAutoCancel(true);
+        return builder.build();
+    }
+
+
+
     private void takePicture() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
@@ -172,6 +214,7 @@ public class CreateReminder extends AppCompatActivity {
 
             if (pictureFile != null) {
                 this.fileName = pictureFile.getName();
+                this.pic_absolute_path = pictureFile.getAbsolutePath();
                 Uri pictureURI = FileProvider.getUriForFile(this, "com.deltahacks4.deltamind.deltamind.fileprovider", pictureFile);
 
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, pictureURI);

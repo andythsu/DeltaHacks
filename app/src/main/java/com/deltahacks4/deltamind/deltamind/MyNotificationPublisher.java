@@ -21,6 +21,7 @@ public class MyNotificationPublisher extends BroadcastReceiver {
 
         Notification notification = intent.getParcelableExtra(NOTIFICATION);
         int notificationId = intent.getIntExtra(NOTIFICATION_ID, 0);
+
         notificationManager.notify(notificationId, notification);
     }
 }

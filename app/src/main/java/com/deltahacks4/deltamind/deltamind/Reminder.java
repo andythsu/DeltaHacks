@@ -105,8 +105,9 @@ public class Reminder {
     private ArrayList<SubReminder> calculateSubreminders(Calendar start_c, Calendar end_c, int type, int frequency, String title){
         ArrayList<SubReminder> rmds = new ArrayList<>();
         while(start_c.compareTo(end_c) <= 0){ // if it's less or equal to start day
-            String month = Integer.toString(start_c.get(Calendar.MONTH));
-            month = month.length() > 1 ? month : "0"+month;
+            int m = start_c.get(Calendar.MONTH);
+            m = m+1;
+            String month = Integer.toString(m).length() > 1 ? Integer.toString(m) : "0"+m;
             String date = Integer.toString(start_c.get(Calendar.DATE));
             date = date.length() > 1 ? date : "0"+date;
             String hour = Integer.toString(start_c.get(Calendar.HOUR_OF_DAY));

@@ -97,6 +97,13 @@
                 android:prompt="@string/recurring_prompt" />
 
             <Button
+                android:id="@+id/createReminderButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:text="Take Picture" />
+
+            <Button
                 android:id="@+id/saveButton"
                 style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="match_parent"
@@ -104,13 +111,6 @@
                 android:layout_marginBottom="20dp"
                 android:layout_marginTop="150dp"
                 android:text="SAVE" />
-
-            <Button
-                android:id="@+id/createReminderButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="50dp"
-                android:text="Take Picture"/>
 
         </LinearLayout>
     </ScrollView>

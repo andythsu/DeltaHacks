@@ -49,7 +49,7 @@ public class HomeActivity extends AppCompatActivity {
 
         Cursor res = db.fetchRmds(); // fetch reminders everytime it is redirected to homepage
         Cursor pic = db.fetchPictures();
-        Toast.makeText(this, Integer.toString(pic.getCount()), Toast.LENGTH_LONG).show();
+//        Toast.makeText(this, Integer.toString(pic.getCount()), Toast.LENGTH_LONG).show();
         if(res.getCount() == 0){
             no_reminder_label.setVisibility(View.VISIBLE);
             mListView.setVisibility(View.INVISIBLE);
@@ -81,10 +81,6 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        scheduleNotification(2);
-
-
-
 
 //        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 //            @Override
@@ -98,29 +94,6 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
-    public void scheduleNotification(int times) {
-        int multiplier = 10000; // delay 10 seconds
-        for (int i = 0; i < times; i++) {
-            Intent notificationIntent = new Intent(this, MyNotificationPublisher.class);
-            notificationIntent.putExtra(MyNotificationPublisher.NOTIFICATION_ID, i);
-            notificationIntent.putExtra(MyNotificationPublisher.NOTIFICATION, getNotification());
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, i, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-            //Debug. Schedule at 5 seconds later.
-            alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + multiplier, pendingIntent);
-            multiplier += 10000;
-        }
-    }
 
-    private Notification getNotification() {
-        Notification.Builder builder = new Notification.Builder(this);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, HomeActivity.class), 0);
-        builder.setContentIntent(pendingIntent);
-        builder.setContentTitle("Title");
-        builder.setContentText("Context");
-        builder.setSmallIcon(R.drawable.ic_launcher_foreground);
-        builder.setPriority(Notification.PRIORITY_MAX);
-        builder.setDefaults(NotificationCompat.DEFAULT_VIBRATE);
-        return builder.build();
-    }
+
 }

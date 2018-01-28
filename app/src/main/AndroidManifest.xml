@@ -16,7 +16,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.deltahacks4.deltamind.deltamind.fileprovider"
@@ -24,23 +23,22 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths">
-            </meta-data>
+                android:resource="@xml/file_paths"></meta-data>
         </provider>
 
         <activity android:name=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <receiver android:name="com.deltahacks4.deltamind.deltamind.MyNotificationPublisher" />
+        <receiver android:name=".MyNotificationPublisher" />
 
-        <activity android:name="com.deltahacks4.deltamind.deltamind.HomeActivity" />
-
-        <activity android:name="com.deltahacks4.deltamind.deltamind.CreateReminder"/>
-
+        <activity android:name=".HomeActivity" />
+        <activity android:name=".CreateReminder" />
+        <activity android:name=".DetailActivity"></activity>
     </application>
 
 </manifest>
