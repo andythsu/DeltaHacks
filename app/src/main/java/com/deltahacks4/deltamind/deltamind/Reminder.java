@@ -15,25 +15,29 @@ public class Reminder {
     private String start_day_time;
     private String end_day_time;
     private String occurrence;
-    private String happening_day_time;
+    private ArrayList<SubReminder> sub_rmds;
+//    private String happening_day_time;
+    private ArrayList<String> picture_names;
 
-    public Reminder(String title, String description, String start_day_time, String end_day_time, String occurrence){
+    public Reminder(String title, String description, String start_day_time, String end_day_time, String occurrence, ArrayList<String> picture_names){
         this.title = title;
         this.description = description;
         this.start_day_time = start_day_time;
         this.end_day_time = end_day_time;
         this.occurrence = occurrence;
+        this.picture_names = picture_names;
     }
 
-    public Reminder(String title, String description, String start_day_time, String end_day_time, String occurrence, String happening_day_time){
-        this.title = title;
-        this.description = description;
-        this.start_day_time = start_day_time;
-        this.end_day_time = end_day_time;
-        this.occurrence = occurrence;
-        // happening_day_time is to distinguish between "big reminder" and "small reminder"
-        this.happening_day_time = happening_day_time;
-    }
+//    public Reminder(String title, String description, String start_day_time, String end_day_time, String occurrence, ArrayList<String> picture_names, String happening_day_time){
+//        this.title = title;
+//        this.description = description;
+//        this.start_day_time = start_day_time;
+//        this.end_day_time = end_day_time;
+//        this.occurrence = occurrence;
+//        this.picture_names = picture_names;
+//        // happening_day_time is to distinguish between "big reminder" and "small reminder"
+////        this.happening_day_time = happening_day_time;
+//    }
 
     // getters
     public String getTitle(){
@@ -52,35 +56,35 @@ public class Reminder {
         return this.end_day_time;
     }
 
-    public String getHappening_day_time(){
-        return this.happening_day_time;
+//    public String getHappening_day_time(){
+//        return this.happening_day_time;
+//    }
+
+    private ArrayList<SubReminder> getAllSubreminders(){
+        return getAllSubreminders(this.occurrence);
     }
 
-    public ArrayList<Reminder> getAllRmds(){
-        // this is the stuff that will go to DB
-        return getAllRmds(this.occurrence);
-    }
 
-    private ArrayList<Reminder> getAllRmds(String occurrence){
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private ArrayList<SubReminder> getAllSubreminders(String occurrence){
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Calendar end_c = Calendar.getInstance();
         Calendar start_c = Calendar.getInstance();
         try{
-            if(occurrence.equalsIgnoreCase("every 10 seconds")){
-                end_c.setTime(dateFormatter.parse(this.end_day_time));
-                start_c.setTime(dateFormatter.parse(this.start_day_time));
-                int frequency = 10;
-                return calculateReminders(start_c, end_c, Calendar.SECOND, frequency);
-            }else if(occurrence.equalsIgnoreCase("every 1 day")){
+            if(occurrence.equalsIgnoreCase("Every minute")){
                 end_c.setTime(dateFormatter.parse(this.end_day_time));
                 start_c.setTime(dateFormatter.parse(this.start_day_time));
                 int frequency = 1;
-                return calculateReminders(start_c, end_c, Calendar.DATE, frequency);
-            }else if(occurrence.equalsIgnoreCase("every 3 days")){
+                return calculateSubreminders(start_c, end_c, Calendar.MINUTE, frequency);
+            }else if(occurrence.equalsIgnoreCase("Every day")){
+                end_c.setTime(dateFormatter.parse(this.end_day_time));
+                start_c.setTime(dateFormatter.parse(this.start_day_time));
+                int frequency = 1;
+                return calculateSubreminders(start_c, end_c, Calendar.DATE, frequency);
+            }else if(occurrence.equalsIgnoreCase("Every 3 days")){
                 end_c.setTime(dateFormatter.parse(this.end_day_time));
                 start_c.setTime(dateFormatter.parse(this.start_day_time));
                 int frequency = 3;
-                return calculateReminders(start_c, end_c, Calendar.DATE, frequency);
+                return calculateSubreminders(start_c, end_c, Calendar.DATE, frequency);
             }else{
                 System.out.println("no matching occurrence");
                 return null;
@@ -91,8 +95,8 @@ public class Reminder {
         }
     }
 
-    private ArrayList<Reminder> calculateReminders(Calendar start_c, Calendar end_c, int type, int frequency){
-        ArrayList<Reminder> rmds = new ArrayList<>();
+    private ArrayList<SubReminder> calculateSubreminders(Calendar start_c, Calendar end_c, int type, int frequency){
+        ArrayList<SubReminder> rmds = new ArrayList<>();
         while(end_c.compareTo(start_c) <= 0){ // if it's less or equal to start day
             String month = Integer.toString(end_c.get(Calendar.MONTH));
             month = month.length() > 1 ? month : "0"+month;
@@ -105,7 +109,7 @@ public class Reminder {
             String second = Integer.toString(end_c.get(Calendar.SECOND));
             second = second.length() > 1 ? second : "0"+second;
             String happening_day_time = end_c.get(Calendar.YEAR) + "-" + month + "-" + date + " " + hour + ":" + minute + ":" + second;
-            Reminder rmd = new Reminder(this.title, this.description, this.start_day_time, this.end_day_time, this.occurrence, happening_day_time);
+            SubReminder rmd = new SubReminder(happening_day_time);
             rmds.add(rmd);
             end_c.add(type, frequency);
         }

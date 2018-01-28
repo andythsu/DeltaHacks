@@ -68,13 +68,24 @@ public class DBActivity extends SQLiteOpenHelper{
     }
 
     // helper method
-    public boolean insertToRmd(Reminder rmd){
+    public boolean insertRmd(Reminder rmd, SubReminder sub_rmd){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues val = new ContentValues();
         val.put(RMD_TITLE, rmd.getTitle());
         val.put(RMD_DESCRIPTION, rmd.getDescription());
-        val.put(RMD_DAY_TIME, rmd.getHappening_day_time());
+        val.put(RMD_DAY_TIME, sub_rmd.getHappening_day_time());
         long result = db.insert(RMD_TABLE, null, val);
+
+        return result == -1 ? false : true;
+
+    }
+
+    public boolean insertPicture(String rmd_id, String picture_name){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues val = new ContentValues();
+        val.put(PIC_RMD_ID, rmd_id);
+        val.put(PIC_NAME, picture_name);
+        long result = db.insert(PIC_TABLE, null, val);
 
         return result == -1 ? false : true;
 
