@@ -17,6 +17,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".HomeActivity"></activity>
+        <receiver android:name="com.deltahacks4.deltamind.deltamind.MyNotificationPublisher" />
     </application>
 
 </manifest>
