@@ -73,7 +73,7 @@ public class DBActivity extends SQLiteOpenHelper{
         ContentValues val = new ContentValues();
         val.put(RMD_TITLE, rmd.getTitle());
         val.put(RMD_DESCRIPTION, rmd.getDescription());
-        val.put(RMD_DAY_TIME, rmd.getDay_time());
+        val.put(RMD_DAY_TIME, rmd.getHappening_day_time());
         long result = db.insert(RMD_TABLE, null, val);
 
         return result == -1 ? false : true;
