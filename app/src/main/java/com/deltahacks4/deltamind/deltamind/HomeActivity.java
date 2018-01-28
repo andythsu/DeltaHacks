@@ -5,14 +5,20 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,36 +30,70 @@ public class HomeActivity extends AppCompatActivity {
     List<String> reminders = new ArrayList<String>();
 
     private ListView mListView;
-    private List<String> items = Arrays.asList("cat", "dog", "parrot", "goldfish");
-
+    private DBActivity db;
+    private ArrayList<String> items;
+    private TextView no_reminder_label;
+    Button createButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         // Configure UI Binding
         setContentView(R.layout.activity_home);
         mListView = (ListView) findViewById(R.id.string_arraylist);
 
+        db = new DBActivity(this);
 
-        // Construct data storage vars
-        ArrayList<String> data = new ArrayList<String>(items);
+        no_reminder_label = (TextView) findViewById(R.id.no_rmd_label);
 
-        // Adaptor for list view from array data
-        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, data);
+        Cursor res = db.fetchRmds();
+
+        if(res.getCount() == 0){
+            no_reminder_label.setVisibility(View.VISIBLE);
+            mListView.setVisibility(View.INVISIBLE);
+        }else{
+            while(res.moveToNext()){
+                items.add(res.getString(1) + "\t\t\t" + res.getString(3));
+            }
+            // Adaptor for list view from array data
+            ArrayAdapter adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items){
+                @Override
+                public View getView(int position, View convertView, ViewGroup parent) {
+                    TextView view = (TextView) super.getView(position, convertView, parent);
+                    view.setText(getItem(position));
+                    return view;
+                }
+            };
+            mListView.setAdapter(adapter);
+            mListView.setVisibility(View.VISIBLE);
+            no_reminder_label.setVisibility(View.INVISIBLE);
+        }
 
 
-        mListView.setAdapter(adapter);
 
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Intent intent = new Intent(HomeActivity.this, CreateReminder.class);
+//                intent.putExtra("crypto", items.get(position));
+//                startActivity(intent);
+//            }
+//        });
+
+
+
+
+        createButton = (Button)findViewById(R.id.createReminderButton);
+        // createButton listener
+        createButton.setOnClickListener(new View.OnClickListener(){
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(HomeActivity.this, CreateReminder.class);
-                intent.putExtra("crypto", items.get(position));
+            public void onClick(View view) {
+                Intent intent = new Intent(view.getContext(), CreateReminder.class);
                 startActivity(intent);
             }
-
-//        scheduleNotification(2);
         });
+
+        //        scheduleNotification(2);
+
     }
 
     public void scheduleNotification(int times) {

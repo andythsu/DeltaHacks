@@ -3,6 +3,7 @@ package com.deltahacks4.deltamind.deltamind;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 
 /**
@@ -17,9 +18,9 @@ public class Reminder {
     private String occurrence;
     private ArrayList<SubReminder> sub_rmds;
 //    private String happening_day_time;
-    private ArrayList<String> picture_names;
+    private String picture_names;
 
-    public Reminder(String title, String description, String start_day_time, String end_day_time, String occurrence, ArrayList<String> picture_names){
+    public Reminder(String title, String description, String start_day_time, String end_day_time, String occurrence, String picture_names){
         this.title = title;
         this.description = description;
         this.start_day_time = start_day_time;
@@ -60,7 +61,13 @@ public class Reminder {
 //        return this.happening_day_time;
 //    }
 
-    private ArrayList<SubReminder> getAllSubreminders(){
+    public ArrayList<SubReminder> getAllSubreminders(){
+        System.out.println(this.end_day_time);
+        System.out.println(this.start_day_time);
+        System.out.println("objects: ");
+        for(int i=0; i<getAllSubreminders(this.occurrence).size(); i++){
+            System.out.println("obj: " + getAllSubreminders(this.occurrence).get(i).toString());
+        }
         return getAllSubreminders(this.occurrence);
     }
 
@@ -74,17 +81,17 @@ public class Reminder {
                 end_c.setTime(dateFormatter.parse(this.end_day_time));
                 start_c.setTime(dateFormatter.parse(this.start_day_time));
                 int frequency = 1;
-                return calculateSubreminders(start_c, end_c, Calendar.MINUTE, frequency);
+                return calculateSubreminders(start_c, end_c, Calendar.MINUTE, frequency, this.title);
             }else if(occurrence.equalsIgnoreCase("Every day")){
                 end_c.setTime(dateFormatter.parse(this.end_day_time));
                 start_c.setTime(dateFormatter.parse(this.start_day_time));
                 int frequency = 1;
-                return calculateSubreminders(start_c, end_c, Calendar.DATE, frequency);
+                return calculateSubreminders(start_c, end_c, Calendar.DATE, frequency, this.title);
             }else if(occurrence.equalsIgnoreCase("Every 3 days")){
                 end_c.setTime(dateFormatter.parse(this.end_day_time));
                 start_c.setTime(dateFormatter.parse(this.start_day_time));
                 int frequency = 3;
-                return calculateSubreminders(start_c, end_c, Calendar.DATE, frequency);
+                return calculateSubreminders(start_c, end_c, Calendar.DATE, frequency, this.title);
             }else{
                 System.out.println("no matching occurrence");
                 return null;
@@ -95,7 +102,7 @@ public class Reminder {
         }
     }
 
-    private ArrayList<SubReminder> calculateSubreminders(Calendar start_c, Calendar end_c, int type, int frequency){
+    private ArrayList<SubReminder> calculateSubreminders(Calendar start_c, Calendar end_c, int type, int frequency, String title){
         ArrayList<SubReminder> rmds = new ArrayList<>();
         while(end_c.compareTo(start_c) <= 0){ // if it's less or equal to start day
             String month = Integer.toString(end_c.get(Calendar.MONTH));
@@ -109,7 +116,7 @@ public class Reminder {
             String second = Integer.toString(end_c.get(Calendar.SECOND));
             second = second.length() > 1 ? second : "0"+second;
             String happening_day_time = end_c.get(Calendar.YEAR) + "-" + month + "-" + date + " " + hour + ":" + minute + ":" + second;
-            SubReminder rmd = new SubReminder(happening_day_time);
+            SubReminder rmd = new SubReminder(happening_day_time, title);
             rmds.add(rmd);
             end_c.add(type, frequency);
         }

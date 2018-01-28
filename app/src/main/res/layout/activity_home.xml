@@ -1,26 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<android.support.constraint.ConstraintLayout tools:context="com.deltahacks4.deltamind.deltamind.SplashActivity"
-    android:layout_height="match_parent"
-    android:layout_width="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.deltahacks4.deltamind.deltamind.SplashActivity">
+
+    <TextView
+        android:id="@+id/no_rmd_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="You have 0 reminders"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 
     <ListView
+        android:id="@+id/string_arraylist"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clickable="true"
-        android:id="@+id/string_arraylist"
         android:background="@color/bright"
+        android:clickable="true"
         tools:ignore="MissingConstraints"
         tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp">
-
-    </ListView>
+        tools:layout_editor_absoluteY="0dp"></ListView>
 
     <Button
-        android:id="@+id/addReminderButton"
+        android:id="@+id/createReminderButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Button" />
