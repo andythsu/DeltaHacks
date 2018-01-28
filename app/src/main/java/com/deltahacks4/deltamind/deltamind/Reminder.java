@@ -104,21 +104,21 @@ public class Reminder {
 
     private ArrayList<SubReminder> calculateSubreminders(Calendar start_c, Calendar end_c, int type, int frequency, String title){
         ArrayList<SubReminder> rmds = new ArrayList<>();
-        while(end_c.compareTo(start_c) <= 0){ // if it's less or equal to start day
-            String month = Integer.toString(end_c.get(Calendar.MONTH));
+        while(start_c.compareTo(end_c) <= 0){ // if it's less or equal to start day
+            String month = Integer.toString(start_c.get(Calendar.MONTH));
             month = month.length() > 1 ? month : "0"+month;
-            String date = Integer.toString(end_c.get(Calendar.DATE));
+            String date = Integer.toString(start_c.get(Calendar.DATE));
             date = date.length() > 1 ? date : "0"+date;
-            String hour = Integer.toString(end_c.get(Calendar.HOUR_OF_DAY));
+            String hour = Integer.toString(start_c.get(Calendar.HOUR_OF_DAY));
             hour = hour.length() > 1 ? hour : "0"+hour;
-            String minute = Integer.toString(end_c.get(Calendar.MINUTE));
+            String minute = Integer.toString(start_c.get(Calendar.MINUTE));
             minute = minute.length() > 1 ? minute : "0"+minute;
-            String second = Integer.toString(end_c.get(Calendar.SECOND));
+            String second = Integer.toString(start_c.get(Calendar.SECOND));
             second = second.length() > 1 ? second : "0"+second;
-            String happening_day_time = end_c.get(Calendar.YEAR) + "-" + month + "-" + date + " " + hour + ":" + minute + ":" + second;
+            String happening_day_time = start_c.get(Calendar.YEAR) + "-" + month + "-" + date + " " + hour + ":" + minute + ":" + second;
             SubReminder rmd = new SubReminder(happening_day_time, title);
             rmds.add(rmd);
-            end_c.add(type, frequency);
+            start_c.add(type, frequency);
         }
         return rmds;
     }

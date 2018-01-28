@@ -68,7 +68,7 @@ public class DBActivity extends SQLiteOpenHelper{
     }
 
     // helper method
-    public boolean insertRmd(Reminder rmd, SubReminder sub_rmd){
+    public long insertRmd(Reminder rmd, SubReminder sub_rmd){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues val = new ContentValues();
         val.put(RMD_TITLE, rmd.getTitle());
@@ -76,11 +76,12 @@ public class DBActivity extends SQLiteOpenHelper{
         val.put(RMD_DAY_TIME, sub_rmd.getHappening_day_time());
         long result = db.insert(RMD_TABLE, null, val);
 
-        return result == -1 ? false : true;
+        return result;
+//        return result == -1 ? false : true;
 
     }
 
-    public boolean insertPicture(String rmd_id, String picture_name){
+    public boolean insertPicture(long rmd_id, String picture_name){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues val = new ContentValues();
         val.put(PIC_RMD_ID, rmd_id);
@@ -95,7 +96,14 @@ public class DBActivity extends SQLiteOpenHelper{
         SQLiteDatabase db = this.getWritableDatabase();
         String sql = "SELECT * FROM " + RMD_TABLE + " ORDER BY " + RMD_DAY_TIME + " DESC";
         Cursor res = db.rawQuery(sql, null);
-        return  res;
+        return res;
+    }
+
+    public Cursor fetchPictures(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String sql = "SELECT * FROM " + PIC_TABLE;
+        Cursor res = db.rawQuery(sql, null);
+        return res;
     }
 
 }

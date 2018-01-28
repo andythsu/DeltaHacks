@@ -17,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
@@ -31,8 +32,8 @@ public class HomeActivity extends AppCompatActivity {
 
     private ListView mListView;
     private DBActivity db;
-    private ArrayList<String> items;
     private TextView no_reminder_label;
+    private ArrayList<String> items;
     Button createButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,19 +41,21 @@ public class HomeActivity extends AppCompatActivity {
         // Configure UI Binding
         setContentView(R.layout.activity_home);
         mListView = (ListView) findViewById(R.id.string_arraylist);
+        items = new ArrayList<>();
 
         db = new DBActivity(this);
 
         no_reminder_label = (TextView) findViewById(R.id.no_rmd_label);
 
-        Cursor res = db.fetchRmds();
-
+        Cursor res = db.fetchRmds(); // fetch reminders everytime it is redirected to homepage
+        Cursor pic = db.fetchPictures();
+        Toast.makeText(this, Integer.toString(pic.getCount()), Toast.LENGTH_LONG).show();
         if(res.getCount() == 0){
             no_reminder_label.setVisibility(View.VISIBLE);
             mListView.setVisibility(View.INVISIBLE);
         }else{
             while(res.moveToNext()){
-                items.add(res.getString(1) + "\t\t\t" + res.getString(3));
+                items.add("Title: " + res.getString(1) + "\n" + "Happening time: " + res.getString(3));
             }
             // Adaptor for list view from array data
             ArrayAdapter adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items){
@@ -68,6 +71,19 @@ public class HomeActivity extends AppCompatActivity {
             no_reminder_label.setVisibility(View.INVISIBLE);
         }
 
+        createButton = (Button)findViewById(R.id.createReminderButton);
+        // createButton listener
+        createButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(view.getContext(), CreateReminder.class);
+                startActivity(intent);
+            }
+        });
+
+        scheduleNotification(2);
+
+
 
 
 //        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -79,20 +95,6 @@ public class HomeActivity extends AppCompatActivity {
 //            }
 //        });
 
-
-
-
-        createButton = (Button)findViewById(R.id.createReminderButton);
-        // createButton listener
-        createButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(view.getContext(), CreateReminder.class);
-                startActivity(intent);
-            }
-        });
-
-        //        scheduleNotification(2);
 
     }
 

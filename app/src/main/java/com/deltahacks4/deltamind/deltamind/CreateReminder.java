@@ -1,11 +1,19 @@
 package com.deltahacks4.deltamind.deltamind;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -15,13 +23,20 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TimePicker;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
 public class CreateReminder extends AppCompatActivity {
 
     Button saveButton;
+    Button takePictureButton;
     private DBActivity db;
+    private String fileName;
+
+    static final int REQUEST_IMAGE_CAPTURE = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +45,7 @@ public class CreateReminder extends AppCompatActivity {
         db = new DBActivity(this);
 
         saveButton = (Button)findViewById(R.id.saveButton);
+        takePictureButton = findViewById(R.id.createReminderButton);
 
         saveButton.setOnClickListener(new View.OnClickListener(){
 
@@ -84,13 +100,35 @@ public class CreateReminder extends AppCompatActivity {
                 Reminder rmd = new Reminder(title.getText().toString(), description.getText().toString(), start_day_time, end_day_time, frequency.getSelectedItem().toString(), "1");
                 ArrayList<SubReminder> sub_rmds = rmd.getAllSubreminders();
 
+
+                boolean savedToPicDB = false;
+                long rmd_id;
+
                 for(int i=0; i<sub_rmds.size(); i++){
-                    db.insertRmd(rmd, sub_rmds.get(i));
+                    // save reminder into reminder table
+                    rmd_id = db.insertRmd(rmd, sub_rmds.get(i));
+                    if(rmd_id == -1) System.out.println("error when saving to reminder table");
+                    // save associated picture
+                    savedToPicDB = db.insertPicture(rmd_id, fileName);
+                    if(savedToPicDB) System.out.println("error when saving to picture table");
                 }
 
                 Intent newIntent = new Intent(view.getContext(), HomeActivity.class);
                 startActivity(newIntent);
 
+            }
+        });
+
+
+        this.takePictureButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                if (ContextCompat.checkSelfPermission(CreateReminder.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
+                    ActivityCompat.requestPermissions(CreateReminder.this, new String[] {Manifest.permission.CAMERA}, 100);
+                } else {
+                    takePicture();
+                }
             }
         });
 
@@ -105,6 +143,64 @@ public class CreateReminder extends AppCompatActivity {
 //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
 //            }
-        };
+        }
+
+        @Override
+        public void onRequestPermissionsResult(int requestCode, String permission[], int[] grantResults) {
+            switch (requestCode) {
+                case REQUEST_IMAGE_CAPTURE:
+                    if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        takePicture();
+                    } else {
+                        this.takePictureButton.setClickable(false);
+                    }
+            }
+        }
+
+    private void takePicture() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File Object to store the picture taken
+            File pictureFile = null;
+
+            try {
+                pictureFile = configImageFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            if (pictureFile != null) {
+                this.fileName = pictureFile.getName();
+                Uri pictureURI = FileProvider.getUriForFile(this, "com.deltahacks4.deltamind.deltamind.fileprovider", pictureFile);
+
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, pictureURI);
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
+        }
+    }
+
+    private File configImageFile() throws IOException {
+        String photoPath = getPackageName();
+
+        try {
+            photoPath = getPackageManager().getPackageInfo(photoPath, 0).applicationInfo.dataDir;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        // TODO: Change file name when integrating with View
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,
+                ".jpg",
+                storageDir
+        );
+
+        return image;
+    }
+
 
     }
